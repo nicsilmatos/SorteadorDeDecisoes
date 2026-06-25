@@ -15,7 +15,7 @@ export function inputDecisao(){
         if (opcao.trim === '') return;
         // Atualiza o estado da lista usando uma função de retorno (prev) garantindo 
         // que pegue o estado mais recente da lista.
-        setListaOpcoes((prev) => [...prev, opacity.trim()]);
+        setListaOpcoes((prev) => [...prev, opcao.trim()]);
         setOpcao(''); //limpa o campo de texto
     }, [opcao]);
 
