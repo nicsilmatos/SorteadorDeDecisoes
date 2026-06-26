@@ -21,7 +21,7 @@ export function useDecisionEngine(){
 
       //função que faz o sorteio 
       const sortear = useCallback(()=> {
-        //validação se tem pelo menos 2 itens na lista pra sortear
+        //validação se tem pelo menos 2 itens na lista pr   a sortear
         if (listaOpcoes.length < 2){
           Alert.alert('Adicione pelo menos duas opcoes para sortear');
           return;
@@ -54,5 +54,5 @@ export function useDecisionEngine(){
         return () => assinatura && assinatura.remove(); //limpeza para evitar memory leak
     }, [sortear]); // O efeito depende da função sortear atualizada com a lista atual
 
-    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo,};
+    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo};
 }
