@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 
-export function inputDecisao(){
+export function useDecisionEngine(){
     const [opcao, setOpcao] = useState(''); //gerencia a entrada de texto
     const [listaOpcoes, setListaOpcoes] = useState([]); //gerencia a lista de opcoes
     const [resultado, setResultado] = useState(null); //gerencia os resultados
