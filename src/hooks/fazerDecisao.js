@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
+import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEY = '@SorteadorDeDecisoes:lista' //// Chave única para salvar no celular
 
 export function useDecisionEngine(){
     const [opcao, setOpcao] = useState(''); //gerencia a entrada de texto
@@ -17,7 +20,46 @@ export function useDecisionEngine(){
         // que pegue o estado mais recente da lista.
         setListaOpcoes((prev) => [...prev, opcao.trim()]);
         setOpcao(''); //limpa o campo de texto
-    }, [opcao]);
+
+        //evitar duplicatas
+        if (listaOpcoes.includes(opcao.trim())){
+            Alert.alert('Opção repetida', 'Você ja adicionou essa opção na lista');
+            return
+        }
+        setListaOpcoes((prev) => [...prev, opcao.trim()]);
+        setOpcao('');
+    }, [opcao, listaOpcoes]);
+
+    //remover individualmente baseado no index
+    const removerOpcao = useCallback((indexParaRemover) => {
+        setListaOpcoes((prev) => prev.filter((_, index) => index !== indexParaRemover));
+    }, [])
+
+    useEffect(() => {
+        async function carregarLista(){
+            try{
+                const dadosSalvos = await AsyncStorage.getItem(STORAGE_KEY);
+                if (dadosSalvos !== null){
+                    setListaOpcoes(JSON.parse(dadosSalvos));
+                }
+            } catch (error) {
+                console.error("Erro ao carregar a lista", error);
+            }
+            salvarLista();
+    }
+    }, [listaOpcoes]);
+
+    // salvar os dados sempre que a lista mudar
+    useEffect(() => {
+        async function salvarLista() {
+            try {
+                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(listaOpcoes));
+            } catch (error) {
+                console.error("Erro ao salvar a lista", error);
+            }
+        }
+        salvarLista();
+    }, [listaOpcoes]);
 
       //função que faz o sorteio 
       const sortear = useCallback(()=> {
@@ -40,6 +82,7 @@ export function useDecisionEngine(){
     }, []);
 
     useEffect(() => {
+
         Accelerometer.setUpdateInterval(100); 
 
         const assinatura = Accelerometer.addListener(({ x, y, z}) => {
@@ -54,5 +97,5 @@ export function useDecisionEngine(){
         return () => assinatura && assinatura.remove(); //limpeza para evitar memory leak
     }, [sortear]); // O efeito depende da função sortear atualizada com a lista atual
 
-    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo};
+    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, carregarLista, removerOpcao};
 }
