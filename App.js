@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useDecisionEngine } from './hooks/FazerDecisao';
-import { ResultadoDisplay, resultadoDisplay } from './components/resultadoDisplay';
-import { DecisionInput } from './components/inputDecisao';
-import { DecisionList } from './components/listaDecisao';
-import { colors } from './theme/cores'
+import { useDecisionEngine } from './src/hooks/fazerDecisao';
+import { ResultadoDisplay } from './src/components/resultadoDisplay';
+import { DecisionInput } from './src/components/inputDecisao';
+import { DecisionList } from './src/components/listaDecisao';
+import { colors } from './src/theme/colors'
 
 export default function App() {
 

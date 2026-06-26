@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme/cores';
+import { colors } from '../theme/colors';
 
 export function ResultadoDisplay({resultado}) {
     if (!resultado) return null;

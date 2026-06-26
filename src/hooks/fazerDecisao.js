@@ -12,7 +12,7 @@ export function useDecisionEngine(){
     const adicionarOpcao = useCallback(() => { 
         //useCallback: Memoriza a função para evitar que ela seja recriada na memória a cada 
         // letra que o usuário digitar no input
-        if (opcao.trim === '') return;
+        if (opcao.trim() === '') return;
         // Atualiza o estado da lista usando uma função de retorno (prev) garantindo 
         // que pegue o estado mais recente da lista.
         setListaOpcoes((prev) => [...prev, opcao.trim()]);
@@ -22,7 +22,7 @@ export function useDecisionEngine(){
       //função que faz o sorteio 
       const sortear = useCallback(()=> {
         //validação se tem pelo menos 2 itens na lista pra sortear
-        if (listaOpcoes < 2){
+        if (listaOpcoes.length < 2){
           Alert.alert('Adicione pelo menos duas opcoes para sortear');
           return;
         }
@@ -45,7 +45,7 @@ export function useDecisionEngine(){
         const assinatura = Accelerometer.addListener(({ x, y, z}) => {
         // CÁLCULO VETORIAL: O sensor devolve a aceleração nos eixos X, Y e Z baseados na gravidade 
         // Usa a fórmula da Magnitude do Vetor Tridimensional (Teorema de Pitágoras em 3D)
-            const aceleracaoTotal = Math.sqrt(x * z + y * y + z * z);
+            const aceleracaoTotal = Math.sqrt(x * x + y * y + z * z);
             // Se o valor ultrapassar 2.6, significa que uma força externa (o chacoalho) foi aplicada
             if (aceleracaoTotal > 2.6) {
                 sortear();
