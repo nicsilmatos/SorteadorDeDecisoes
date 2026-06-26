@@ -48,35 +48,38 @@ export function ResultadoDisplay({resultado}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.surfaceAccent,
-    padding: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  containerVazio: {
-      height: 110, 
-      marginBottom: 20,
+    container: {
+        backgroundColor: colors.surfaceAccent,
+        paddingVertical: 28,
+        paddingHorizontal: 20,
+        borderRadius: 28,
+        alignItems: 'center',
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: colors.border,
+        elevation: 10,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
     },
-  label: {
-    color: colors.textMuted,
-    fontSize: 14,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-  },
-  texto: {
-    color: colors.primary,
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginTop: 5,
-    textAlign: 'center',
-  },
+    containerVazio: {
+        height: 120, 
+        marginBottom: 24,
+    },
+    label: {
+        color: colors.textMuted,
+        fontSize: 13,
+        textTransform: 'uppercase',
+        fontWeight: '600',
+        letterSpacing: 2, 
+    },
+    texto: {
+        color: colors.secondary, 
+        fontSize: 34,
+        fontWeight: 'bold',
+        marginTop: 10,
+        textAlign: 'center',
+        letterSpacing: 0.5,
+    },
 });
