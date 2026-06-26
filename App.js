@@ -9,7 +9,7 @@ import { colors } from './src/theme/colors'
 export default function App() {
 
   // Desestrutura todas as ferramentas necessárias do hook 
-  const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo} = useDecisionEngine();
+  const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao} = useDecisionEngine();
   return (
     <SafeAreaView style={styles.container}>
 
@@ -23,7 +23,10 @@ export default function App() {
       onAdd={adicionarOpcao}
       />
 
-      <DecisionList data={listaOpcoes}/>
+      <DecisionList 
+      data={listaOpcoes}
+      onRemove={removerOpcao}
+      />
 
       <View style={styles.containerAcoes}>
         <TouchableOpacity style={styles.botaoSortear} onPress={sortear}>
