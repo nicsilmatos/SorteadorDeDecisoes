@@ -11,7 +11,11 @@ export function DecisionList({ data, onRemove }) {
       renderItem={({ item, index }) => (
         <View style={styles.item}>
           <Text style={styles.texto}>{item}</Text>
-          <TouchableOpacity style={styles.botaoRemover} onPress={() => onRemove(index)}>
+          <TouchableOpacity style={styles.botaoRemover} 
+          onPress={() => onRemove(index)}
+          accessible={true}
+          accessibilityLabel={`Remoção do item ${item}`}
+          accessibilityRole='button'>
             <Text style={styles.textoBotaoRemover}>✕</Text>
           </TouchableOpacity>
         </View>

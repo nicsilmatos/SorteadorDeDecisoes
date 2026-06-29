@@ -21,7 +21,11 @@ export function PainelModal({
         {/* Cabeçalho do Modal */}
         <View style={styles.modalHeader}>
           <Text style={styles.modalTitulo}>Seu Espaço</Text>
-          <TouchableOpacity style={styles.botaoFecharModal} onPress={onClose}>
+          <TouchableOpacity style={styles.botaoFecharModal} 
+          onPress={onClose}
+          accessible={true}
+          accessibilityLabel='Fechar modal'
+          accessibilityRole='button'>
             <Text style={styles.textoBotaoFecharModal}>✕ Fechar</Text>
           </TouchableOpacity>
         </View>
@@ -64,7 +68,10 @@ export function PainelModal({
                     <Text style={styles.textoNomeCategoria}>{item}</Text>
                     <Text style={styles.textoQtdItens}>{categoria[item].length} itens</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => deletarCategoria(item)}>
+                  <TouchableOpacity onPress={() => deletarCategoria(item)}
+                    accessible={true}
+                    accessibilityLabel={`Deletar template ${item}`}
+                    accessibilityRole='button'>
                     <Text style={styles.textoDeletar}>✕</Text>
                   </TouchableOpacity>
                 </View>

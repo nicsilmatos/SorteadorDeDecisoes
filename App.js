@@ -28,7 +28,12 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerPrincipal}>
           <Text style={styles.titulo}>Sorteador de Decisões</Text>
-          <TouchableOpacity style={styles.botaoAbrirModal} onPress={() => setModalVisivel(true)}>
+          <TouchableOpacity 
+          style={styles.botaoAbrirModal} 
+          onPress={() => setModalVisivel(true)}
+          accessible={true}
+          accessibilityLabel='Abrir menu de templates e histórico'
+          accessibilityRole='button'>
           <Text style={styles.textoBotaoAbrirModal}>☰</Text>
         </TouchableOpacity>
       </View>
