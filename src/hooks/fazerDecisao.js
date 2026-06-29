@@ -4,9 +4,22 @@ import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const STORAGE_KEY = '@SorteadorDeDecisoes:lista'; //// Chave única para salvar no celular
-const HISTORICO_KEY = '@SorteadorDeDecisoes:historico';
-const CATEGORIAS_KEY = '@SorteadorDeDecisoes:categorias';
+const CONFIG = {
+    STORAGE_KEYS: {
+    LISTA: '@SorteadorDeDecisoes:lista',
+    HISTORICO: '@SorteadorDeDecisoes:historico',
+    CATEGORIAS: '@SorteadorDeDecisoes:categorias',
+},
+    LIMITES: {
+    MAX_HISTORICOS: 5,
+    MIN_ITENS_SORTEIO: 2,
+},
+    SENSORES: {
+    INTERVALO_MS: 100,
+    FORCA_CHACOALHO: 2.6,
+    DEBOUNCE_MS: 1500,
+    },
+}
 
 export function useDecisionEngine(){
     const [opcao, setOpcao] = useState(''); //gerencia a entrada de texto
@@ -16,7 +29,7 @@ export function useDecisionEngine(){
     const [categoria, setCategoria] = useState({}) //armazena um objeto onde cada chave é o nome de uma lista e valores 
 
     useEffect(() => {
-        AsyncStorage.getItem(STORAGE_KEY)
+        AsyncStorage.getItem(CONFIG.STORAGE_KEYS.LISTA)
         .then ((dadosSalvos) => {
             if (dadosSalvos !== null){
                 const listaConvertida = JSON.parse(dadosSalvos);
@@ -30,13 +43,13 @@ export function useDecisionEngine(){
         .catch((error) => console.error('Erro ao carregar a lista', error));
 
         //Recupera o historico dos sorteios salvos
-        AsyncStorage.getItem(HISTORICO_KEY)
+        AsyncStorage.getItem(CONFIG.STORAGE_KEYS.HISTORICO)
         .then((dados) => {
             if (dados) setHistorico(JSON.parse(dados)); 
         }) .catch(() => {});
 
         //recupera as categorias/templates criados pelo usuário
-        AsyncStorage.getItem(CATEGORIAS_KEY)
+        AsyncStorage.getItem(CONFIG.STORAGE_KEYS.CATEGORIAS)
         .then((dados) => {
             if (dados) setCategoria(JSON.parse(dados));
         }) .catch(() => {});
@@ -46,7 +59,7 @@ export function useDecisionEngine(){
     useEffect(() => {
         async function salvarLista() {
             try {
-                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(listaOpcoes));
+                await AsyncStorage.setItem(CONFIG.STORAGE_KEYS.LISTA, JSON.stringify(listaOpcoes));
             } catch (error) {
                 console.error("Erro ao salvar a lista", error);
             }
@@ -56,12 +69,12 @@ export function useDecisionEngine(){
 
     //sincroniza o historico com o armazenamento local sempre que um novo item entra
     useEffect(() => {
-        AsyncStorage.setItem(HISTORICO_KEY, JSON.stringify(historico)).catch(() => {});
+        AsyncStorage.setItem(CONFIG.STORAGE_KEYS.HISTORICO, JSON.stringify(historico)).catch(() => {});
     }, [historico]);
 
     //sincroniza o dicionario de categorias com o armazenamento sempre que uma nova lista for adicionada ou excluida
     useEffect(() => {
-        AsyncStorage.setItem(CATEGORIAS_KEY, JSON.stringify(categoria)).catch(() => {})
+        AsyncStorage.setItem(CONFIG.STORAGE_KEYS.CATEGORIAS, JSON.stringify(categoria)).catch(() => {})
     }, [categoria])
 
 
@@ -84,8 +97,8 @@ export function useDecisionEngine(){
     //função que faz o sorteio 
       const sortear = useCallback(()=> {
         //validação se tem pelo menos 2 itens na lista pr   a sortear
-        if (listaOpcoes.length < 2){
-          Alert.alert('Adicione pelo menos duas opcoes para sortear');
+        if (listaOpcoes.length < CONFIG.LIMITES.MIN_ITENS_SORTEIO){
+          Alert.alert(`Adicione pelo menos ${CONFIG.LIMITES.MIN_ITENS_SORTEIO} opções`);
           return;
         }
         // faz uma vibração para avisar que o sorteio aconteceu
@@ -97,7 +110,7 @@ export function useDecisionEngine(){
 
         if (opcaoEscolhida) {
             setResultado(opcaoEscolhida);
-            setHistorico((prev) => [opcaoEscolhida, ...prev].slice(0, 5)); //salva no historico, slice garante o limite de 5 itens no painel e o spread [...] coloca o novo item no topo
+            setHistorico((prev) => [opcaoEscolhida, ...prev].slice(0, CONFIG.LIMITES.MAX_HISTORICOS)); //salva no historico, slice garante o limite de 5 itens no painel e o spread [...] coloca o novo item no topo
         }
       }, [listaOpcoes]); //Atualiza a lógica de sorteio sempre que a lista de opções mudar
 
@@ -154,7 +167,7 @@ export function useDecisionEngine(){
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setListaOpcoes([]);
         setResultado(null);
-        AsyncStorage.removeItem(STORAGE_KEY).catch(() => {}) // Limpa a memória física do celular  
+        AsyncStorage.removeItem(CONFIG.STORAGE_KEYS.LISTA).catch(() => {}) // Limpa a memória física do celular  
     }, []);
 
     const limparHistorico = useCallback(() => {
@@ -206,7 +219,7 @@ export function useDecisionEngine(){
         // Referência para controlar se o sorteio está bloqueado (aguardando o tempo passar)
         let execultandoSorteio = false;
 
-        Accelerometer.setUpdateInterval(100); 
+        Accelerometer.setUpdateInterval(CONFIG.SENSORES.INTERVALO_MS); 
 
         const assinatura = Accelerometer.addListener(({ x, y, z}) => {
         // CÁLCULO VETORIAL: O sensor devolve a aceleração nos eixos X, Y e Z baseados na gravidade 
@@ -214,14 +227,14 @@ export function useDecisionEngine(){
             const aceleracaoTotal = Math.sqrt(x * x + y * y + z * z);
             // Se o valor ultrapassar 2.6, significa que uma força externa (o chacoalho) foi aplicada
             // Se ultrapassar o limite E não estiver no meio do tempo de espera
-            if (aceleracaoTotal > 2.6 && !execultandoSorteio) {
+            if (aceleracaoTotal > CONFIG.SENSORES.FORCA_CHACOALHO && !execultandoSorteio) {
                 execultandoSorteio = true;
                 sortear();
 
                 // Trava por 1.5 segundos antes de permitir chacoalhar de novo
                 setTimeout(() => {
                     execultandoSorteio = false;
-                }, 1500);
+                }, CONFIG.SENSORES.DEBOUNCE_MS);
             }
         });
         return () => assinatura && assinatura.remove(); //limpeza para evitar memory leak

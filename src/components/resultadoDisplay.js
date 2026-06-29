@@ -2,6 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, Animated ,View } from 'react-native';
 import { colors } from '../theme/colors';
 
+const ANIMATION_CONFIG = {
+    SPRING: {
+        FRICTON:4,
+        TENSION: 40, 
+    },
+    TIMING: {
+        DURATION: 300,
+    }
+}
+
 export function ResultadoDisplay({resultado}) {
     // referências para os valores da animação
     // escala 0 (invisível) e opacidade 0
@@ -18,14 +28,14 @@ export function ResultadoDisplay({resultado}) {
             // Efeito de Mola (Spring) para a escala (faz o "pulo")
             Animated.spring(scaleAnim, {
                 toValue: 1,
-                friction: 4, // Controle de resistência (menor = mais balanço)
-                tension: 40, // Velocidade da mola
+                friction: ANIMATION_CONFIG.SPRING.FRICTON, // Controle de resistência (menor = mais balanço)
+                tension: ANIMATION_CONFIG.SPRING.TENSION, // Velocidade da mola
                 useNativeDriver: true, // Melhora a performance
             }),
             // Efeito de Surgimento suave (Fade-in)
             Animated.timing(opacityAnim, {
                 toValue: 1,
-                duration: 300,
+                duration: ANIMATION_CONFIG.TIMING.DURATION,
                 useNativeDriver: true,
             }),
         ]).start();
