@@ -103,7 +103,7 @@ export function PainelModal({
 const styles = StyleSheet.create({
   modalFundo: {
     flex: 1,
-    backgroundColor: '#160E1F',
+    backgroundColor: colors.background,
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 20,

@@ -7,7 +7,7 @@ export function DecisionList({ data, onRemove }) {
     <FlatList
       data={data} //passa a lista de dados para a FlatList inteirar
       //keyExtractor: Gera um identificador único para cada item da lista na renderização
-      keyExtractor={(item, index) => index.toString()}
+      keyExtractor={(item) => item}
       renderItem={({ item, index }) => (
         <View style={styles.item}>
           <Text style={styles.texto}>{item}</Text>

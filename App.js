@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Modal, TextInput, FlatList, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { useDecisionEngine } from './src/hooks/fazerDecisao';
 import { ResultadoDisplay } from './src/components/resultadoDisplay';
 import { DecisionInput } from './src/components/inputDecisao';
@@ -11,7 +11,6 @@ export default function App() {
 
   const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico} = useDecisionEngine();
 
-  {/* cabeçalho principal: Alinha o título do app lado a lado com o botão de acesso ao Painel */}
   const [modalVisivel, setModalVisivel] = useState(false);
   const [nomeTemplate, setNomeTemplate] = useState('');
 
@@ -27,7 +26,6 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* cabeçalho principal: Alinha o título do app lado a lado com o botão de acesso ao Painel */}
       <View style={styles.headerPrincipal}>
           <Text style={styles.titulo}>Sorteador de Decisões</Text>
           <TouchableOpacity style={styles.botaoAbrirModal} onPress={() => setModalVisivel(true)}>

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@SorteadorDeDecisoes:lista'; //// Chave única para salvar no celular
 const HISTORICO_KEY = '@SorteadorDeDecisoes:historico';
@@ -152,7 +152,7 @@ export function useDecisionEngine(){
     const limparTudo = useCallback(() => { //reseta tudo
         setListaOpcoes([]);
         setResultado(null);
-        AsyncStorage.removeItem('@SorteadorDeDecisoes:lista').catch(() => {}) // Limpa a memória física do celular  
+        AsyncStorage.removeItem(STORAGE_KEY).catch(() => {}) // Limpa a memória física do celular  
     }, []);
 
     const limparHistorico = useCallback(() => {
@@ -199,6 +199,8 @@ export function useDecisionEngine(){
 
 
     useEffect(() => {
+        // Referência para controlar se o sorteio está bloqueado (aguardando o tempo passar)
+        let execultandoSorteio = false;
 
         Accelerometer.setUpdateInterval(100); 
 
@@ -207,8 +209,15 @@ export function useDecisionEngine(){
         // Usa a fórmula da Magnitude do Vetor Tridimensional (Teorema de Pitágoras em 3D)
             const aceleracaoTotal = Math.sqrt(x * x + y * y + z * z);
             // Se o valor ultrapassar 2.6, significa que uma força externa (o chacoalho) foi aplicada
-            if (aceleracaoTotal > 2.6) {
+            // Se ultrapassar o limite E não estiver no meio do tempo de espera
+            if (aceleracaoTotal > 2.6 && !execultandoSorteio) {
+                execultandoSorteio = true;
                 sortear();
+
+                // Trava por 1.5 segundos antes de permitir chacoalhar de novo
+                setTimeout(() => {
+                    execultandoSorteio = false;
+                }, 1500);
             }
         });
         return () => assinatura && assinatura.remove(); //limpeza para evitar memory leak
