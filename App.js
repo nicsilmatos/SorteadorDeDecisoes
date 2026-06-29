@@ -6,6 +6,10 @@ import { DecisionInput } from './src/components/inputDecisao';
 import { DecisionList } from './src/components/listaDecisao';
 import { PainelModal } from './src/components/painelModal';
 import { colors } from './src/theme/colors'
+import { Platform, UIManager } from 'react-native'; //Para que a animação de remoção funcione em dispositivos Android antigos 
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function App() {
 

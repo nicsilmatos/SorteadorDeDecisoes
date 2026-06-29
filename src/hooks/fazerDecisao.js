@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert } from 'react-native';
+import { Alert, LayoutAnimation} from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -120,6 +120,7 @@ export function useDecisionEngine(){
     // função que substitui a lista de opções atual pelos itens gravados na categoria escolhida
     const carregarCategoria = useCallback((nomeCategoria) => {
         if (categoria[nomeCategoria]) {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             setListaOpcoes(categoria[nomeCategoria]);
             setResultado(null); // Reseta o card de resultado anterior para evitar confusão visual
         }
@@ -150,6 +151,7 @@ export function useDecisionEngine(){
     }, []);
 
     const limparTudo = useCallback(() => { //reseta tudo
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setListaOpcoes([]);
         setResultado(null);
         AsyncStorage.removeItem(STORAGE_KEY).catch(() => {}) // Limpa a memória física do celular  
@@ -189,7 +191,9 @@ export function useDecisionEngine(){
                 },
                 {
                     text: "Apagar",
-                    onPress: () => {setListaOpcoes((prev) => prev.filter((_, index) => index !== indexParaRemover));
+                    onPress: () => {
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); //animação suave de remoção
+                        setListaOpcoes((prev) => prev.filter((_, index) => index !== indexParaRemover));
                     }, 
                     style: "destructive"
                 }
