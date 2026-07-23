@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, ActivityIndicator} from 'react-native';
 import { colors } from '../theme/colors';
 
-export function DecisionInput({ value, onChangeText, onAdd }) {
+export function DecisionInput({ value, onChangeText, onAdd, onGerarIA, carregando }) {
   return (
     <View style={styles.container}>
       <TextInput
@@ -12,7 +12,21 @@ export function DecisionInput({ value, onChangeText, onAdd }) {
         value={value}
         onChangeText={onChangeText}
       />
-      <TouchableOpacity style={styles.botao} onPress={onAdd}>
+
+      {/* Botão para chamar a IA */}
+      <TouchableOpacity 
+        style={[styles.botao, styles.botaoIA]} 
+        onPress={onGerarIA}
+        disabled={carregando}
+      >
+        {carregando ? (
+          <ActivityIndicator color={colors.textPrimary} size="small" />
+        ) : (
+          <Text style={styles.textoBotaoIA}>✨</Text>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.botao} onPress={onAdd} disabled={carregando}>
         <Text style={styles.textoBotao}>+</Text>
       </TouchableOpacity>
     </View>
@@ -49,6 +63,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
+  },
+  botaoIA: {
+    backgroundColor: colors.primary,   
   },
   textoBotao: {
     color: colors.textPrimary,

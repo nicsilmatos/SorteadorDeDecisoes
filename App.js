@@ -13,7 +13,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 export default function App() {
 
-  const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico} = useDecisionEngine();
+  const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico, gerarSugestoesIA, carregando} = useDecisionEngine();
 
   const [modalVisivel, setModalVisivel] = useState(false);
   const [nomeTemplate, setNomeTemplate] = useState('');
@@ -48,6 +48,8 @@ export default function App() {
       value={opcao}
       onChangeText={setOpcao}
       onAdd={adicionarOpcao}
+      onGerarIA={gerarSugestoesIA}
+      carregando={carregando}
       />
 
       <DecisionList 

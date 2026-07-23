@@ -3,6 +3,7 @@ import { Alert, LayoutAnimation} from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { obterSugestoesIA } from '../services/api';
 
 const CONFIG = {
     STORAGE_KEYS: {
@@ -20,6 +21,8 @@ const CONFIG = {
     DEBOUNCE_MS: 1500,
     },
 }
+
+const API_URL = "https://sorteador-backend.nicsilmatos.workers.dev";
 
 export function useDecisionEngine(){
     const [opcao, setOpcao] = useState(''); //gerencia a entrada de texto
@@ -240,5 +243,41 @@ export function useDecisionEngine(){
         return () => assinatura && assinatura.remove(); //limpeza para evitar memory leak
     }, [sortear]); // O efeito depende da função sortear atualizada com a lista atual
 
-    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico};
+    const [carregando, setCarregando] = useState(false);
+
+    const gerarSugestoesIA = useCallback(async () => {
+    if (opcao.trim() === '') {
+        Alert.alert('Digite uma categoria', 'Exemplo: Filme de terror, Restaurante...');
+        return;
+    }
+
+    setCarregando(true);
+    try {
+        const sugestoes = await obterSugestoesIA(opcao.trim());
+        if (sugestoes && sugestoes.length > 0) {
+        // Adiciona as sugestões retornadas pela IA à sua lista atual sem duplicar
+        setListaOpcoes((prev) => Array.from(new Set([...prev, ...sugestoes])));
+        setOpcao(''); // Limpa o input
+        } else {
+        Alert.alert('Aviso', 'A IA não retornou sugestões para essa categoria.');
+        }
+    } catch (error) {
+        Alert.alert('Erro', 'Não foi possível gerar sugestões com a IA.');
+    } finally {
+        setCarregando(false);
+    }
+
+    try {
+    console.log("Enviando requisição para:", API_URL);
+    const sugestoes = await obterSugestoesIA(opcao.trim());
+    console.log("Sugestões recebidas:", sugestoes);
+    // ... resto do código
+    } catch (error) {
+    console.error("Erro detalhado no fetch:", error); // <--- Veja a mensagem no terminal do Expo
+    Alert.alert('Erro', `Falha ao gerar: ${error.message}`);
+    }
+
+    }, [opcao]);
+
+    return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico, gerarSugestoesIA, carregando};
 }
