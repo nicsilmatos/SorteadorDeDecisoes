@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert, LayoutAnimation} from 'react-native';
+import { Alert, LayoutAnimation, Platform} from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -248,6 +248,8 @@ export function useDecisionEngine(){
 
     useEffect(() => {
         // Referência para controlar se o sorteio está bloqueado (aguardando o tempo passar)
+        if (Platform.OS === 'web') return;
+
         let execultandoSorteio = false;
 
         Accelerometer.setUpdateInterval(CONFIG.SENSORES.INTERVALO_MS); 
