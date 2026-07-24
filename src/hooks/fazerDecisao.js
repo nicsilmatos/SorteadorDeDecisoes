@@ -3,13 +3,14 @@ import { Alert, LayoutAnimation} from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { obterSugestoesIA } from '../services/api';
+import { obterSugestoesIA, carregarListaNuvem, salvarListaNuvem } from '../services/api';
 
 const CONFIG = {
     STORAGE_KEYS: {
     LISTA: '@SorteadorDeDecisoes:lista',
     HISTORICO: '@SorteadorDeDecisoes:historico',
     CATEGORIAS: '@SorteadorDeDecisoes:categorias',
+    DEVICE_ID: '@SorteadorDeDecisoes:deviceId',
 },
     LIMITES: {
     MAX_HISTORICOS: 5,
@@ -57,18 +58,45 @@ export function useDecisionEngine(){
             if (dados) setCategoria(JSON.parse(dados));
         }) .catch(() => {});
     }, []);  
+
+        //gera/recupera o ID do dispositivo (bloco "a") =====
+    const [deviceId, setDeviceId] = useState(null);
+
+    useEffect(() => {
+        AsyncStorage.getItem(CONFIG.STORAGE_KEYS.DEVICE_ID).then((idSalvo) => {
+            if (idSalvo) {
+                setDeviceId(idSalvo);
+            } else {
+                const novoId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+                AsyncStorage.setItem(CONFIG.STORAGE_KEYS.DEVICE_ID, novoId).then(() => setDeviceId(novoId));
+            }
+        });
+    }, []);
+
+        // restaura a lista da nuvem quando o deviceId fica pronto (bloco "b") =====
+    useEffect(() => {
+        if (!deviceId) return;
+        carregarListaNuvem(deviceId).then((res) => {
+            if (res?.lista?.length > 0 && listaOpcoes.length === 0) {
+                setListaOpcoes(res.lista);
+            }
+        });
+    }, [deviceId]);
     
     // salvar os dados sempre que a lista mudar
     useEffect(() => {
         async function salvarLista() {
             try {
                 await AsyncStorage.setItem(CONFIG.STORAGE_KEYS.LISTA, JSON.stringify(listaOpcoes));
+                if (deviceId) {
+                    salvarListaNuvem(deviceId, listaOpcoes); // fire-and-forget
+                }
             } catch (error) {
                 console.error("Erro ao salvar a lista", error);
             }
         }
         salvarLista();
-    }, [listaOpcoes]);
+    }, [listaOpcoes, deviceId]);
 
     //sincroniza o historico com o armazenamento local sempre que um novo item entra
     useEffect(() => {
@@ -266,17 +294,6 @@ export function useDecisionEngine(){
     } finally {
         setCarregando(false);
     }
-
-    try {
-    console.log("Enviando requisição para:", API_URL);
-    const sugestoes = await obterSugestoesIA(opcao.trim());
-    console.log("Sugestões recebidas:", sugestoes);
-    // ... resto do código
-    } catch (error) {
-    console.error("Erro detalhado no fetch:", error); // <--- Veja a mensagem no terminal do Expo
-    Alert.alert('Erro', `Falha ao gerar: ${error.message}`);
-    }
-
     }, [opcao]);
 
     return {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico, gerarSugestoesIA, carregando};

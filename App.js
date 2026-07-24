@@ -11,6 +11,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+const APP_URL = "https://sorteador-backend.nicsilmatos.workers.dev";
+
 export default function App() {
 
   const {opcao, setOpcao, listaOpcoes, resultado, adicionarOpcao, sortear, limparTudo, removerOpcao, historico, categoria, salvarListaComoCategoria, carregarCategoria, deletarCategoria, limparHistorico, gerarSugestoesIA, carregando} = useDecisionEngine();
